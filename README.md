@@ -1,8 +1,8 @@
 # Rock Paper Scissors AI
 
-## 🔗 Live Demonstration
+## Live Demonstration
 
-### 🚀 Launch Live VS Code Environment
+### Launch Live VS Code Environment
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/natinew77-creator/ML-Rock-Paper-Scissors)
 > **Note:** Click the button above.
@@ -31,7 +31,7 @@ My AI successfully defeated all four bots with significantly improved win rates:
 | **Kris** | **100.0%** |  Passed |
 | **Mrugesh** | **99.7%** |  Passed |
 
-## 🧪 Live Code Testing
+## Live Code Testing
 
 ### Run Automated Tests
 To verify the win rates against all 4 bots, run the main script:
