@@ -1,8 +1,14 @@
 # Adaptive Rock Paper Scissors AI
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white)
-![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Pattern%20Recognition-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
+<a href="https://www.python.org/">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+</a>
+<a href="https://www.freecodecamp.org/learn/machine-learning-with-python/">
+  <img src="https://img.shields.io/badge/Machine%20Learning-Pattern%20Recognition-green?style=for-the-badge" alt="Machine Learning">
+</a>
+<a href="https://github.com/natinew77-creator/ML-Rock-Paper-Scissors">
+  <img src="https://img.shields.io/badge/Status-Completed-success?style=for-the-badge" alt="Status">
+</a>
 
 A high-performance AI agent designed to defeat multiple distinct bot strategies in the classic game of Rock Paper Scissors. This project demonstrates the application of **ensemble methods**, **pattern recognition**, and **adaptive strategy selection** to achieve a win rate exceeding 60% against four unique opponent archetypes.
 
@@ -82,7 +88,9 @@ ML-Rock-Paper-Scissors/
 ```
 
 ## 🔗 Live Demo
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/natinew77-creator/ML-Rock-Paper-Scissors)
+<a href="https://codespaces.new/natinew77-creator/ML-Rock-Paper-Scissors">
+  <img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces">
+</a>
 
 ---
 *Developed by [Your Name] - [Link to Portfolio/LinkedIn]*
