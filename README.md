@@ -1,4 +1,4 @@
-# Adaptive Rock Paper Scissors AI
+# 🤖 Adaptive Rock Paper Scissors AI
 
 <a href="https://www.python.org/">
   <img src="https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
@@ -12,7 +12,7 @@
 
 A high-performance AI agent designed to defeat multiple distinct bot strategies in the classic game of Rock Paper Scissors. This project demonstrates the application of **ensemble methods**, **pattern recognition**, and **adaptive strategy selection** to achieve a win rate exceeding 60% against four unique opponent archetypes.
 
-## Project Overview
+## 📋 Project Overview
 
 This solution was developed for the freeCodeCamp Machine Learning certification. The core challenge involves creating a single agent capable of adapting to four different opponents:
 1.  **Quincy**: A fixed-pattern bot.
@@ -22,7 +22,7 @@ This solution was developed for the freeCodeCamp Machine Learning certification.
 
 My solution implements a **Meta-Strategy Ensemble** that tracks the performance of multiple sub-strategies in real-time and dynamically switches to the most effective one for each opponent.
 
-## Technical Architecture
+## 🧠 Technical Architecture
 
 The agent does not rely on a single algorithm. Instead, it employs a **Multi-Arm Bandit** approach where four distinct predictors run in parallel. A scoring system evaluates which predictor would have won the *previous* round and selects the highest-scoring predictor for the *next* move.
 
@@ -42,7 +42,7 @@ The `player` function maintains a `strategy_scores` vector. After every round:
 3.  The agent selects the strategy with the highest current score to determine the next move.
 4.  This allows the agent to "learn" the opponent's identity within the first few rounds and lock into the optimal counter-strategy.
 
-## Performance Results
+## 🚀 Performance Results
 
 The agent was tested against 1000 rounds for each opponent. A win rate of >60% is required to pass.
 
@@ -53,7 +53,7 @@ The agent was tested against 1000 rounds for each opponent. A win rate of >60% i
 | **Kris** | **100.0%** | ✅ PASSED |
 | **Mrugesh** | **99.7%** | ✅ PASSED |
 
-## Installation & Usage
+## 💻 Installation & Usage
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -76,7 +76,7 @@ To play against the bots yourself, uncomment the following line in `main.py`:
 # play(human, abbey, 20, verbose=True)
 ```
 
-## File Structure
+## 📂 File Structure
 
 ```
 ML-Rock-Paper-Scissors/
@@ -93,4 +93,7 @@ ML-Rock-Paper-Scissors/
 </a>
 
 ---
-*Developed by [Natneal B.] - [https://linkedin.com/in/natneal-belete]*
+*Developed by Natneal B.*
+<a href="https://linkedin.com/in/natneal-belete">
+  <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
