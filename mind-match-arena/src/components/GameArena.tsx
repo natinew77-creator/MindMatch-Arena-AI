@@ -174,7 +174,7 @@ const GameArena: React.FC = () => {
                             <p className="text-gray-400 mb-8">Select the number of rounds to calibrate the AI against your neural patterns.</p>
 
                             <div className="grid grid-cols-2 gap-4 mb-6">
-                                {[10, 20, 50, 100].map(rounds => (
+                                {[20, 40, 60, 100].map(rounds => (
                                     <button
                                         key={rounds}
                                         onClick={() => startGame(rounds)}

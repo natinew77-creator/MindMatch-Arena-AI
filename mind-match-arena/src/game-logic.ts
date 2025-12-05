@@ -65,13 +65,13 @@ export class MindMatchAI {
         // Ensure we have 5 scores
         while (this.strategyScores.length < 5) this.strategyScores.push(0);
 
-        this.strategyScores = this.strategyScores.map(s => s * 0.95); // Slower decay (0.9 -> 0.95) to keep good strategies active longer
+        this.strategyScores = this.strategyScores.map(s => s * 0.8); // Aggressive decay (0.9 -> 0.8) to drop losers fast
 
         this.currentPredictions.forEach((predictedMove, index) => {
             if (predictedMove === playerMove) {
-                this.strategyScores[index] += 1;
+                this.strategyScores[index] += 5; // Huge reward (3 -> 5)
             } else {
-                this.strategyScores[index] -= 0.5;
+                this.strategyScores[index] -= 2; // Punish wrong guesses hard
             }
         });
 
@@ -80,16 +80,17 @@ export class MindMatchAI {
         // --- Strategy 1: Pattern Hunter (Opponent Only) ---
         let strat1Prediction: Move = 'R';
         let strat1Confidence = 0;
-        if (this.opponentHistory.length > 3) {
+        if (this.opponentHistory.length > 0) { // Check immediately
             const maxSearchLen = Math.min(this.opponentHistory.length - 1, 10);
             let foundPattern = false;
-            for (let len = maxSearchLen; len >= 3; len--) {
+            for (let len = maxSearchLen; len >= 1; len--) {
                 const currentPattern = this.opponentHistory.slice(-len).join('');
                 const historyStr = this.opponentHistory.slice(0, -1).join('');
                 const lastIndex = historyStr.lastIndexOf(currentPattern);
                 if (lastIndex !== -1 && lastIndex + len < historyStr.length) {
                     strat1Prediction = historyStr[lastIndex + len] as Move;
-                    strat1Confidence = len * 2; // High confidence for long patterns
+                    // Exponential confidence boost for longer patterns
+                    strat1Confidence = Math.pow(len, 1.5) * 20;
                     foundPattern = true;
                     break;
                 }
@@ -100,20 +101,19 @@ export class MindMatchAI {
         // --- Strategy 2: Pattern Hunter (Full Context: My Move + Their Move) ---
         let strat2Prediction: Move = 'P';
         let strat2Confidence = 0;
-        if (this.opponentHistory.length > 3 && this.myHistory.length > 3) {
+        if (this.opponentHistory.length > 0 && this.myHistory.length > 0) {
             const combinedHistory = this.opponentHistory.map((m, i) => m + (this.myHistory[i] || ''));
             const maxSearchLen = Math.min(combinedHistory.length - 1, 8);
             let foundPattern = false;
 
-            for (let len = maxSearchLen; len >= 2; len--) {
-                // Re-verify match in array to be safe
+            for (let len = maxSearchLen; len >= 1; len--) {
                 const suffix = combinedHistory.slice(-len);
                 for (let i = combinedHistory.length - 2 - len; i >= 0; i--) {
                     const slice = combinedHistory.slice(i, i + len);
                     if (slice.every((val, idx) => val === suffix[idx])) {
                         const nextMove = this.opponentHistory[i + len];
                         strat2Prediction = nextMove;
-                        strat2Confidence = len * 2.5; // Higher confidence for context matches
+                        strat2Confidence = Math.pow(len, 1.5) * 25; // Even higher confidence for context matches
                         foundPattern = true;
                         break;
                     }
@@ -125,15 +125,14 @@ export class MindMatchAI {
 
         // --- Strategy 3: Markov Chain (Weighted) ---
         let strat3Prediction: Move = 'S';
-        let strat3Confidence = 1; // Base confidence
+        let strat3Confidence = 1;
         if (this.opponentHistory.length > 0) {
             const lastMove = this.opponentHistory[this.opponentHistory.length - 1];
             const counts = { 'R': 0, 'P': 0, 'S': 0 };
-            // Give more weight to recent history
             for (let i = 0; i < this.opponentHistory.length - 1; i++) {
                 if (this.opponentHistory[i] === lastMove) {
                     const next = this.opponentHistory[i + 1];
-                    const weight = Math.pow(1.05, i);
+                    const weight = Math.pow(1.2, i); // Steeper weight
                     counts[next] += weight;
                 }
             }
@@ -141,11 +140,8 @@ export class MindMatchAI {
             if (total > 0) {
                 const mostLikely = Object.keys(counts).reduce((a, b) => counts[a as Move] > counts[b as Move] ? a : b) as Move;
                 strat3Prediction = mostLikely;
-
-                // Confidence Calculation Upgrade:
-                // If one move is overwhelmingly likely (>60%), boost confidence significantly
                 const probability = counts[mostLikely] / total;
-                strat3Confidence = probability * 5; // Boosted multiplier
+                strat3Confidence = probability * 10;
             }
         }
 
@@ -158,24 +154,68 @@ export class MindMatchAI {
         }
 
         // --- Strategy 5: Frequency Counter (New) ---
-        // If they play Rock 70% of the time, just play Paper.
         let strat5Prediction: Move = 'P';
         let strat5Confidence = 0;
-        if (this.opponentHistory.length > 10) {
+        if (this.opponentHistory.length >= 3) {
             const counts = { 'R': 0, 'P': 0, 'S': 0 };
             this.opponentHistory.forEach(m => counts[m]++);
             const total = this.opponentHistory.length;
-            const mostFrequent = Object.keys(counts).reduce((a, b) => counts[a as Move] > counts[b as Move] ? a : b) as Move;
-            const frequency = counts[mostFrequent] / total;
 
-            if (frequency > 0.5) {
-                // CRITICAL: If bias is > 50%, we MUST play the counter 100% of the time.
-                // Any deviation is statistically suboptimal.
-                strat5Prediction = mostFrequent;
-                strat5Confidence = 1000; // Nuclear option: Override all other strategies
-            } else if (frequency > 0.4) {
-                strat5Prediction = mostFrequent;
-                strat5Confidence = (frequency - 0.3) * 10;
+            // Sort counts to check for dominance
+            const sortedCounts = Object.entries(counts).sort(([, a], [, b]) => b - a);
+            const [firstMove, firstCount] = sortedCounts[0];
+            const [, secondCount] = sortedCounts[1];
+
+            const mostFrequent = firstMove as Move;
+            const frequency = firstCount / total;
+            const margin = (firstCount - secondCount) / total;
+
+            // Only use frequency if there is a clear winner (margin > 10%)
+            // This prevents it from guessing randomly when R=50%, P=50%
+            if (margin > 0.1) {
+                if (frequency > 0.6) {
+                    strat5Prediction = mostFrequent;
+                    strat5Confidence = 2000; // SUPER NUCLEAR
+                } else if (frequency > 0.4) {
+                    strat5Prediction = mostFrequent;
+                    strat5Confidence = (frequency - 0.3) * 15;
+                }
+            }
+        }
+
+        // --- SPECIAL: INSTANT REPETITION & ALTERNATING LOCK ---
+
+        // 1. Instant Repetition (R, R -> R)
+        if (this.opponentHistory.length >= 2) {
+            const last = this.opponentHistory[this.opponentHistory.length - 1];
+            const secondLast = this.opponentHistory[this.opponentHistory.length - 2];
+            if (last === secondLast) {
+                strat1Prediction = last;
+                strat1Confidence = 5000; // Absolute priority
+            }
+        }
+
+        // 2. Alternating Lock (R, P, R -> P)
+        if (this.opponentHistory.length >= 3) {
+            const last = this.opponentHistory[this.opponentHistory.length - 1];
+            const last2 = this.opponentHistory[this.opponentHistory.length - 2];
+            const last3 = this.opponentHistory[this.opponentHistory.length - 3];
+
+            if (last === last3 && last !== last2) {
+                // Pattern is A, B, A... predict B
+                strat1Prediction = last2;
+                strat1Confidence = 4000; // High priority (Alternating)
+            }
+        }
+
+        // 3. Early Game Guess (R, P -> R?)
+        // If we only have 2 moves and they are different, guess it's an alternating pattern
+        if (this.opponentHistory.length === 2) {
+            const last = this.opponentHistory[this.opponentHistory.length - 1];
+            const secondLast = this.opponentHistory[this.opponentHistory.length - 2];
+            if (last !== secondLast) {
+                strat1Prediction = secondLast; // Guess they will go back to the first move
+                strat1Confidence = 50; // Moderate boost to tip the scales early
             }
         }
 
@@ -185,8 +225,6 @@ export class MindMatchAI {
         // 4. Select Best Strategy
         const combinedScores = this.strategyScores.map((score, i) => score + confidences[i]);
 
-        // Select the strategy with the highest combined score (History + Current Confidence)
-        // This correctly handles the '1000' confidence override from Strategy 5
         const bestStrategyIndex = combinedScores.indexOf(Math.max(...combinedScores));
 
         const finalPrediction = this.currentPredictions[bestStrategyIndex];
