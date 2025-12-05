@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-neon-green: #39ff14;
+  --color-neon-pink: #ff00ff;
+  --color-neon-blue: #00ffff;
+  --color-dark-bg: #0a0a0a;
+  --color-dark-surface: #1a1a1a;
+  --font-mono: "Share Tech Mono", monospace;
+}
+
+body {
+  @apply bg-dark-bg text-neon-green font-mono;
+}
+
+/* Custom Scrollbar for the log */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-surface;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neon-green/30 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neon-green/50;
+}
