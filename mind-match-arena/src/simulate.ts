@@ -1,4 +1,4 @@
-import { MindMatchAI, Move } from './game-logic';
+import { MindMatchAI, type Move } from './game-logic';
 
 const ai = new MindMatchAI();
 

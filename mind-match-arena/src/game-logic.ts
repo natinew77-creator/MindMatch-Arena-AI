@@ -106,10 +106,6 @@ export class MindMatchAI {
             let foundPattern = false;
 
             for (let len = maxSearchLen; len >= 2; len--) {
-                const currentPattern = combinedHistory.slice(-len).join('|');
-                const historyStr = combinedHistory.slice(0, -1).join('|');
-                const lastIndex = historyStr.lastIndexOf(currentPattern);
-
                 // Re-verify match in array to be safe
                 const suffix = combinedHistory.slice(-len);
                 for (let i = combinedHistory.length - 2 - len; i >= 0; i--) {
